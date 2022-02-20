@@ -34,7 +34,6 @@ class UserRepositoryTest {
         User findUser = userRepository.findOneById(uuid);
 
         Assertions.assertThat(user.getName()).isEqualTo(findUser.getName());
-
     }
 
 

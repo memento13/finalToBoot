@@ -1,6 +1,7 @@
 package kimsungsu.finalToBoot.service;
 
 import kimsungsu.finalToBoot.entity.User;
+import kimsungsu.finalToBoot.entity.form.UserCreateForm;
 import kimsungsu.finalToBoot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,17 +38,49 @@ public class UserService {
     /**
      * 동일한 email의 유저가 존재하는지 검증함
      * @param user
-     * @return 동일한 email이 없는경우 true, 있으면 false 반환
+     * @return 동일한 email && name이 없는경우 true, 있으면 false 반환
      */
-    private boolean validateUser(User user){
+    public boolean validateUser(User user){
 
         boolean result = false;
 
-        List<User> userList = userRepository.findByEmail(user.getEmail());
-        if(userList.isEmpty()){
+        List<User> userListByEmail = userRepository.findByEmail(user.getEmail());
+        List<User> userListByName = userRepository.findByName(user.getName());
+        if(userListByEmail.isEmpty() && userListByName.isEmpty()){
             result = true;
         }
         return result;
     }
+
+    /**
+     * 동일한 email의 유저가 있는지 검증
+     * @param user
+     * @return 동일한 email이 없는경우 true 있으면 false 반환
+     */
+    public boolean validateEmail(User user){
+        boolean result = false;
+
+        List<User> userListByEmail = userRepository.findByEmail(user.getEmail());
+        if(userListByEmail.isEmpty()){
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * 동일한 name의 유저가 있는지 검증
+     * @param user
+     * @return 동일한 name의 없는경우 true 있으면 false 반환
+     */
+    public boolean validateName(User user){
+        boolean result = false;
+
+        List<User> userListByName = userRepository.findByName(user.getName());
+        if(userListByName.isEmpty()){
+            result = true;
+        }
+        return result;
+    }
+
 
 }

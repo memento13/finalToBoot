@@ -7,16 +7,33 @@
 </head>
 <body>
 <div>
-    <form th:object="${userCreateForm}" method="post">
-        <label for="email">이메일</label>
-        <input type="email" id="email" th:field="*{email}">
+    <form th:object="${userCreateForm}" method="post" action="/createUser">
+        <div>
+            <label for="email">이메일</label>
+            <input type="email" id="email" th:field="*{email}">
 
-        <label for="name">이름</label>
-        <input type="text" id="name" th:field="*{name}">
+            <div th:errors="*{email}" style="color: red">
+                이메일 오류
+            </div>
+        </div>
 
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" th:field="*{password}">
+        <div>
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" th:field="*{password}">
+            <div th:errors="*{password}" style="color: red">
+                비밀번호 오류
+            </div>
+        </div>
 
+        <div>
+            <label for="name">이름</label>
+            <input type="text" id="name" th:field="*{name}">
+            <div th:errors="*{name}" style="color: red">
+                이름 오류
+            </div>
+        </div>
+
+        <input type="submit">
 
     </form>
 </div>

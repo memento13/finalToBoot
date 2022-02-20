@@ -1,5 +1,6 @@
 package kimsungsu.finalToBoot.controller;
 
+import kimsungsu.finalToBoot.entity.User;
 import kimsungsu.finalToBoot.entity.form.UserCreateForm;
 import kimsungsu.finalToBoot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -54,16 +55,32 @@ public class LoginController {
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes){
 
-        /**
-         * validator 만들어야함....
-         */
+        User user = new User();
+        user.setEmail(form.getEmail());
+        user.setPassword(form.getPassword());
+        user.setName(form.getName());
+
+
+
+        //혹시 빈값도 감싸야하나? 안해도됨!
+        boolean validateEmail = userService.validateEmail(user);
+        boolean validateName = userService.validateName(user);
+        if(!validateEmail){
+            bindingResult.rejectValue("email","duplicatedEmail","중복된 이메일입니다.");
+        }
+        if(!validateName){
+            bindingResult.rejectValue("name","duplicatedName","중복된 이름입니다.");
+        }
+
         // 실패
         if(bindingResult.hasErrors()){
             log.info("error={}",bindingResult);
             return "createUser/createUserForm";
         }
+
         // 성공
-        return "";
+        boolean createUserResult = userService.CreateUser(user);
+        return "redirect:/";
     }
 
 

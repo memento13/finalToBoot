@@ -1,6 +1,7 @@
 package kimsungsu.finalToBoot.service;
 
 import kimsungsu.finalToBoot.entity.User;
+import kimsungsu.finalToBoot.entity.form.LoginForm;
 import kimsungsu.finalToBoot.entity.form.UserCreateForm;
 import kimsungsu.finalToBoot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +80,16 @@ public class UserService {
         if(userListByName.isEmpty()){
             result = true;
         }
+        return result;
+    }
+
+    /**
+     * loginForm 에 맞는 user 객체 반환
+     * @param form
+     * @return 있으면 user객체 반환 없으면 null
+     */
+    public User loginAuthorization(LoginForm form){
+        User result = userRepository.findOneByEmailAndPassword(form.getEmail(), form.getPassword());
         return result;
     }
 

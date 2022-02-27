@@ -1,6 +1,7 @@
 package kimsungsu.finalToBoot.controller;
 
 import kimsungsu.finalToBoot.entity.User;
+import kimsungsu.finalToBoot.entity.form.LoginForm;
 import kimsungsu.finalToBoot.entity.form.UserCreateForm;
 import kimsungsu.finalToBoot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,27 +20,53 @@ import javax.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j //로그를 추가해야 하는데..
 public class LoginController {
 
     private final UserService userService;
 
     @RequestMapping("/")
-    public String home(Model model){
+    public String home(Model model, HttpSession session){
 
         return "home";
     }
 
-    @RequestMapping("/login")
+    @GetMapping("/login")
     public String login(Model model, HttpSession session){
-        String url = "login";
         if(session.getAttribute("user")!= null){
-            url = "redirect:/";
+            return "redirect:/";
+
         }
-        else{
-            url = "login/loginForm";
+        model.addAttribute("loginForm",new LoginForm());
+        return "login/loginForm";
+    }
+
+    @PostMapping("/login")
+    public String loginValidate(@Valid @ModelAttribute("loginForm") LoginForm form,
+                                BindingResult bindingResult,
+                                HttpSession session){
+
+        /**
+         * 글로벌에러로 로그인 실패 메시지 표시
+         * 성공하면 세션에 유저 저장...
+         */
+        User user = null;
+        if(form.getEmail() != null && form.getPassword() != null){
+            System.out.println("form.getEmail() = " + form.getEmail());
+
+            user = userService.loginAuthorization(form);
+            if(user==null){
+                bindingResult.reject("loginFail","로그인 실패! 이메일 혹은 비밀번호가 다릅니다.");
+            }
         }
-        return url;
+
+        if(bindingResult.hasErrors()){
+            return "login/loginForm";
+        }
+
+        session.setAttribute("user",user);
+
+        return "redirect:/";
     }
 
     @GetMapping("/createUser")
@@ -61,7 +88,6 @@ public class LoginController {
         user.setName(form.getName());
 
 
-
         //혹시 빈값도 감싸야하나? 안해도됨!
         boolean validateEmail = userService.validateEmail(user);
         boolean validateName = userService.validateName(user);
@@ -80,7 +106,7 @@ public class LoginController {
 
         // 성공
         boolean createUserResult = userService.CreateUser(user);
-        return "redirect:/";
+        return "redirect:/login";
     }
 
 

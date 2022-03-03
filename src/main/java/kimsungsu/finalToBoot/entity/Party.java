@@ -21,6 +21,7 @@ public class Party extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id")
+    @JsonIgnore // JSON Serializer Error 때문에 막음, 정보를 보여줄거면 dto로 따로 보여주는게 맞지.
     private User leader;
 
     @OneToMany(mappedBy = "party",cascade = CascadeType.ALL)

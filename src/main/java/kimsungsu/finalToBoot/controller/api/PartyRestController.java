@@ -10,16 +10,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.nio.charset.Charset;
 
 @RestController
-@RequestMapping("/rest")
+@RequestMapping("/rest/parties")
 @RequiredArgsConstructor
 public class PartyRestController {
 
@@ -30,8 +27,8 @@ public class PartyRestController {
      * 파티 생성 컨트롤러 부분
      * 언젠가 모든걸 dto로 따로 만들어서 반환해야겠지...
      */
-    @PostMapping("/create-party")
-    public ResponseEntity<Message> createParty(HttpSession session, @RequestParam("party_name")String partyName){
+    @PostMapping("/{party_name}")
+    public ResponseEntity<Message> createParty(HttpSession session, @PathVariable("party_name")String partyName){
 
         User user = (User) session.getAttribute("user");
         boolean createPartyResult = partyService.createParty(user, partyName);
@@ -45,8 +42,8 @@ public class PartyRestController {
             Party party = partyRepository.findOneByName(partyName);
             message.setData(party);
             message.setMessage("파티 생성 성공");
-            message.setStatus(HttpStatus.OK);
-            return new ResponseEntity<>(message,httpHeaders, HttpStatus.OK);
+            message.setStatus(HttpStatus.CREATED);
+            return new ResponseEntity<>(message,httpHeaders, HttpStatus.CREATED);
         }
         else{ //실패
             message.setMessage("파티 생성 실패");

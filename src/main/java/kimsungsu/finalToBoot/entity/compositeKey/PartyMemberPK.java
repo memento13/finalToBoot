@@ -1,5 +1,7 @@
 package kimsungsu.finalToBoot.entity.compositeKey;
 
+import kimsungsu.finalToBoot.entity.Party;
+import kimsungsu.finalToBoot.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 

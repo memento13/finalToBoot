@@ -6,10 +6,7 @@ import kimsungsu.finalToBoot.entity.form.Message;
 import kimsungsu.finalToBoot.repository.PartyRepository;
 import kimsungsu.finalToBoot.service.PartyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -36,6 +33,10 @@ public class PartyRestController {
         Message message = new Message();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        //캐시무효화
+        CacheControl cacheControl = CacheControl.noCache().noStore().mustRevalidate();
+        httpHeaders.setCacheControl(cacheControl);
+        httpHeaders.setPragma("no-cache");
 
         //파티생성 성공
         if(createPartyResult){
@@ -50,5 +51,23 @@ public class PartyRestController {
             message.setStatus(HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(message,httpHeaders, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * 내가 속하는 파티 목록 ( 리더인것과 멤버인것으로 나눠서)
+     */
+    @GetMapping("/")
+    public ResponseEntity<Message> showPartyList(HttpSession session){
+        User user = (User) session.getAttribute("user");
+
+        Message message = new Message();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        //캐시무효화
+        CacheControl cacheControl = CacheControl.noCache().noStore().mustRevalidate();
+        httpHeaders.setCacheControl(cacheControl);
+        httpHeaders.setPragma("no-cache");
+
+        return null;
     }
 }

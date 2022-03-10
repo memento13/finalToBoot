@@ -7,10 +7,7 @@ import kimsungsu.finalToBoot.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +36,11 @@ public class LoginRestController {
         Message message = new Message();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        //캐시무효화
+        CacheControl cacheControl = CacheControl.noCache().noStore().mustRevalidate();
+        httpHeaders.setCacheControl(cacheControl);
+        httpHeaders.setPragma("no-cache");
         User user = null;
 
         if(form.getEmail() != null && form.getPassword() != null){

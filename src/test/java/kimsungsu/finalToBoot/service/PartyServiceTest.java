@@ -91,11 +91,30 @@ class PartyServiceTest {
     @Test
     public void 파티멤버인_파티목록() throws Exception{
 
-        List<PartyShowDTO> dtoList = partyService.partiesWhereIamMember(user);
+        List<PartyShowDTO> dtoList = partyService.partiesWhereIamMemberV2(user);
         Assertions.assertThat(dtoList.size()).isEqualTo(0);
 
     }
 
+    @Test
+    public void 파티리더인_파티목록V2() throws Exception{
+
+        List<PartyShowDTO> dtoList = partyService.partiesWhereIamLeaderV2(user);
+        Assertions.assertThat(dtoList.size()).isEqualTo(4);
+
+    }
+
+    @Test
+    public void 파티가입확인실패() throws Exception{
+        Boolean result = partyService.checkUserJoinParty(user, "test3124245");
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void 파티가입확인성공() throws Exception{
+        Boolean result = partyService.checkUserJoinParty(user, "test3");
+        Assertions.assertThat(result).isTrue();
+    }
 
 
 }

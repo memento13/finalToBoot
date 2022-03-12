@@ -31,4 +31,12 @@ public class PartyMemberPK implements Serializable {
     public int hashCode() {
         return Objects.hash(getPartyId(), getUserId());
     }
+
+    public PartyMemberPK() {
+    }
+
+    public PartyMemberPK(String partyId, String userId) {
+        this.partyId = partyId;
+        this.userId = userId;
+    }
 }

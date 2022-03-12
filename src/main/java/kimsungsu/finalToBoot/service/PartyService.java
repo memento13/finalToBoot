@@ -8,6 +8,7 @@ import kimsungsu.finalToBoot.repository.PartyMemberRepository;
 import kimsungsu.finalToBoot.repository.PartyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +62,10 @@ public class PartyService {
     public List<PartyShowDTO>partiesWhereIamLeader(User user){
         List<PartyShowDTO> result = new ArrayList<>();
 
-        //반드시 개선해야함.... 아마 엔티티 구조자체를 뜯어고쳐야 할듯
         //파티 id 값만 되고 파티 객체 자체는 연관되지 않음
+        //이유 : jpa가 프록시 객체로 불러와서 지연로딩으로 인해서 party에 id를 제외하고 null 값만 담김
+        //해결방법 : 해당 메서드에서 일어나는 쿼리들을 트랜잭션으로 취급해서 시도하면 됨
+        //           @Transactional 을 붙이자. V2 제작으로 해결함.
         List<PartyMember> partyMembers = partyMemberRepository.findByUserAndGrade(user, 100);
 
         for (PartyMember partyMember : partyMembers) {
@@ -81,7 +84,6 @@ public class PartyService {
     public List<PartyShowDTO>partiesWhereIamMember(User user){
         List<PartyShowDTO> result = new ArrayList<>();
 
-        //반드시 개선해야함.... 아마 엔티티 구조자체를 뜯어고쳐야 할듯
         List<PartyMember> partyMembers = partyMemberRepository.findByUserAndGrade(user, 1);
 
         for (PartyMember partyMember : partyMembers) {
@@ -92,4 +94,71 @@ public class PartyService {
         return result;
     }
 
+    @Transactional
+    public List<PartyShowDTO>partiesWhereIamMemberV2(User user){
+        List<PartyShowDTO> result = new ArrayList<>();
+
+        List<PartyMember> partyMembers = partyMemberRepository.findByUserAndGrade(user, 1);
+
+        for (PartyMember partyMember : partyMembers) {
+            System.out.println("partyMember = " + partyMember.getParty().getId());
+            result.add(new PartyShowDTO(partyMember.getParty(),user.getId()));
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public List<PartyShowDTO>partiesWhereIamLeaderV2(User user){
+        List<PartyShowDTO> result = new ArrayList<>();
+
+        List<PartyMember> partyMembers = partyMemberRepository.findByUserAndGrade(user, 100);
+
+        for (PartyMember partyMember : partyMembers) {
+            System.out.println("partyMember = " + partyMember.getParty().getId());
+            System.out.println("partyMember.getParty().getName() = " + partyMember.getParty().getName());
+            result.add(new PartyShowDTO(partyMember.getParty(),user.getId()));
+        }
+
+        return result;
+    }
+
+    /**
+     * 해당 유저가 파티에 가입되어 있는지 확인하는 함수
+     * @param user 확인할 유저
+     * @param partyName 확인할 파티이름
+     * @return Boolean 값으로 파티에 가입되거나 리더면 true 반환 아니면 false 반환
+     */
+    @Transactional
+    public Boolean checkUserJoinParty(User user,String partyName){
+        Boolean result = false;
+        PartyMember partyMember = null;
+        Party party = partyRepository.findOneByName(partyName);
+        partyMember= partyMemberRepository.findOneByUserAndParty(user, party);
+
+        if(partyMember != null){
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * 해당 유저가 파티에 가입되어 있으면 파티 정보를 넘겨주는 함수
+     * @param user 확인할 유저
+     * @param partyName 확인할 파티이름
+     * @return 파티에 가입되거나 리더면 PartyShowDTO로 반환 아니면 null 값 반환
+     */
+    @Transactional
+    public PartyShowDTO showPartyInfoIfUserJoin(User user, String partyName){
+        PartyShowDTO result = null;
+        PartyMember partyMember = null;
+        Party party = partyRepository.findOneByName(partyName);
+        partyMember= partyMemberRepository.findOneByUserAndParty(user, party);
+
+        if(partyMember != null){
+            result = new PartyShowDTO(partyMember.getParty(),user.getId());
+        }
+
+        return result;
+    }
 }

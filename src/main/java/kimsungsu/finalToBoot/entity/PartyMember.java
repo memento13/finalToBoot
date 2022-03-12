@@ -32,15 +32,16 @@ public class PartyMember extends BaseEntity{
 
 
     public PartyMember() {
-        this.id = new PartyMemberPK();
+//        this.id = new PartyMemberPK();
     }
 
     public PartyMember(Party party, User user, Integer grade) {
-        this.id = new PartyMemberPK();
+//        this.id = new PartyMemberPK();
+//        this.id.setPartyId(party.getId());
+//        this.id.setUserId(user.getId());
+        this.id = new PartyMemberPK(party.getId(),user.getId());
         this.party = party;
         this.user = user;
-        this.id.setPartyId(party.getId());
-        this.id.setUserId(user.getId());
         this.grade = grade;
     }
 

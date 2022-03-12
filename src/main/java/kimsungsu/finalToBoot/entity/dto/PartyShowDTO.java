@@ -9,10 +9,10 @@ public class PartyShowDTO {
     private String name;
     private Boolean isLeader;
 
-    public PartyShowDTO(Party party,String isLeader) {
+    public PartyShowDTO(Party party,String userId) {
         this.id = party.getId();
         this.name = party.getName();
-        if(isLeader.equals(party.getLeader().getId())){
+        if(userId.equals(party.getLeader().getId())){
             this.isLeader = true;
         }
         else{

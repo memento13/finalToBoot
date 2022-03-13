@@ -116,5 +116,39 @@ class PartyServiceTest {
         Assertions.assertThat(result).isTrue();
     }
 
+    @Test
+    public void 파티가입실패_파티이름이_없는_경우() throws Exception{
+        Boolean result = partyService.partyJoinByPartyName(user, "test3333333333");
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void 파티가입실패_파티에_이미_속해있는_경우() throws Exception{
+        Boolean result = partyService.partyJoinByPartyName(user, "test3");
+        Assertions.assertThat(result).isFalse();
+    }
+
+    @Test
+    public void 파티가입성공() throws Exception{
+
+        // 랜덤 유저생성 메소드가 필요함...
+        user = userRepository.findOneByEmailAndPassword("test2@test.com","1q2w3e4r5t6y!");
+        if(user==null){
+            user = new User();
+
+            String uuid = UUID.randomUUID().toString();
+            user.setId(uuid);
+            user.setEmail("test2@test.com");
+            user.setPassword("1q2w3e4r5t6y!");
+            user.setName("KIM2");
+            userRepository.save(user);
+            User findUser = userRepository.findOneById(uuid);
+
+            Assertions.assertThat(user.getName()).isEqualTo(findUser.getName());
+        }
+        Boolean result = partyService.partyJoinByPartyName(user, "test3");
+        Assertions.assertThat(result).isTrue();
+    }
+
 
 }

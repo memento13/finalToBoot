@@ -55,6 +55,11 @@ public class PartyRestController {
         }
     }
 
+    /**
+     * 이름으로 파티 정보 조회함수
+     * 유저가 속해있는 파티인 경우 파티 이름,id,리더 여부를 알려줌
+     * 속해있는 파티가 아닌 경우, 해당 파티가 없는 경우 404 에러
+     */
     @GetMapping("/{party_name}")
     public ResponseEntity<Message> partyInfo(HttpSession session, @PathVariable("party_name")String partyName){
         User user = (User) session.getAttribute("user");
@@ -135,4 +140,43 @@ public class PartyRestController {
 
         return new ResponseEntity<>(message,httpHeaders,HttpStatus.OK);
     }
+
+    /**
+     * 파티 가입
+     */
+    @PostMapping("/join")
+    public ResponseEntity<Message> partyJoin(HttpSession session,
+                                             @RequestParam(value = "party_name",required = true)String partyName){
+        User user = (User) session.getAttribute("user");
+
+        Message message = new Message();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        //캐시무효화
+        CacheControl cacheControl = CacheControl.noCache().noStore().mustRevalidate();
+        httpHeaders.setCacheControl(cacheControl);
+        httpHeaders.setPragma("no-cache");
+
+        Boolean result = partyService.partyJoinByPartyName(user, partyName);
+        if(result){
+            message.setMessage("가입성공");
+            message.setStatus(HttpStatus.CREATED);
+        }
+        else{
+            message.setMessage("가입실패");
+            message.setStatus(HttpStatus.NOT_FOUND);
+        }
+
+        message.setData(result);
+
+        return new ResponseEntity<>(message,httpHeaders,message.getStatus());
+
+    }
+
+    /**
+     * 구현해야 하는 기능
+     * 파티 탈퇴
+     * 파티 삭제
+     * 파티 검색
+     */
 }

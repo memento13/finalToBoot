@@ -94,7 +94,7 @@ public class PartyService {
         return result;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PartyShowDTO>partiesWhereIamMemberV2(User user){
         List<PartyShowDTO> result = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class PartyService {
         return result;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PartyShowDTO>partiesWhereIamLeaderV2(User user){
         List<PartyShowDTO> result = new ArrayList<>();
 
@@ -129,7 +129,7 @@ public class PartyService {
      * @param partyName 확인할 파티이름
      * @return Boolean 값으로 파티에 가입되거나 리더면 true 반환 아니면 false 반환
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Boolean checkUserJoinParty(User user,String partyName){
         Boolean result = false;
         PartyMember partyMember = null;
@@ -148,7 +148,7 @@ public class PartyService {
      * @param partyName 확인할 파티이름
      * @return 파티에 가입되거나 리더면 PartyShowDTO로 반환 아니면 null 값 반환
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public PartyShowDTO showPartyInfoIfUserJoin(User user, String partyName){
         PartyShowDTO result = null;
         PartyMember partyMember = null;
@@ -157,6 +157,26 @@ public class PartyService {
 
         if(partyMember != null){
             result = new PartyShowDTO(partyMember.getParty(),user.getId());
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public Boolean partyJoinByPartyName(User user, String partyName){
+        Boolean result = false;
+        Party party = null;
+        party = partyRepository.findOneByName(partyName);
+
+        if(party != null){
+            PartyMember partyMember = null;
+            partyMember = partyMemberRepository.findOneByUserAndParty(user, party);
+
+            if(partyMember == null){
+                partyMember = new PartyMember(party,user,1);
+                partyMemberRepository.save(partyMember);
+                result = true;
+            }
         }
 
         return result;
